@@ -26,7 +26,10 @@ export default function TodoList({ darkMode, setDarkMode }) {
         setTasks([...tasks, response.data]);
         setTask("");
       })
-      .catch(error => console.error("Error adding task:", error));
+      .catch(error => {
+        console.error("Error adding task:", error);
+        alert("Failed to add task. Please try again.");
+      });
   };
 
   const removeTask = (index) => {
