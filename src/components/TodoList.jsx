@@ -12,7 +12,7 @@ export default function TodoList({ darkMode, setDarkMode }) {
 
   // Fetch tasks from the backend API
   useEffect(() => {
-    axios.get("http://localhost:8000/api/tasks/") // Replace with your backend URL
+    axios.get("https://backend-6un2.onrender.com/api/tasks/") // Replace with your backend URL
       .then(response => {
         setTasks(response.data);
       })
@@ -21,7 +21,7 @@ export default function TodoList({ darkMode, setDarkMode }) {
 
   const addTask = () => {
     if (task.trim() === "") return;
-    axios.post("http://localhost:8000/api/tasks/", { title: task, completed: false })
+    axios.post("https://backend-6un2.onrender.com/api/tasks/", { title: task, completed: false })
       .then(response => {
         setTasks([...tasks, response.data]);
         setTask("");
@@ -31,7 +31,7 @@ export default function TodoList({ darkMode, setDarkMode }) {
 
   const removeTask = (index) => {
     const taskToDelete = tasks[index];
-    axios.delete(`http://localhost:8000/api/tasks/${taskToDelete.id}/`)
+    axios.delete(`https://backend-6un2.onrender.com/api/tasks/${taskToDelete.id}/`)
       .then(() => {
         setTasks(tasks.filter((_, i) => i !== index));
       })
@@ -40,7 +40,7 @@ export default function TodoList({ darkMode, setDarkMode }) {
 
   const toggleComplete = (index) => {
     const taskToToggle = tasks[index];
-    axios.put(`http://localhost:8000/api/tasks/${taskToToggle.id}/`, {
+    axios.put(`https://backend-6un2.onrender.com/api/tasks/${taskToToggle.id}/`, {
       ...taskToToggle,
       completed: !taskToToggle.completed,
     })
@@ -58,7 +58,7 @@ export default function TodoList({ darkMode, setDarkMode }) {
   const saveEdit = (index) => {
     if (editedTask.trim() === "") return;
     const taskToEdit = tasks[index];
-    axios.put(`http://localhost:8000/api/tasks/${taskToEdit.id}/`, {
+    axios.put(`https://backend-6un2.onrender.com/api/tasks/${taskToEdit.id}/`, {
       ...taskToEdit,
       title: editedTask,
     })
@@ -71,7 +71,7 @@ export default function TodoList({ darkMode, setDarkMode }) {
 
   const handleDeleteAll = () => {
     if (selectAll) {
-      axios.delete("http://localhost:8000/api/tasks/")
+      axios.delete("https://backend-6un2.onrender.com/api/tasks/")
         .then(() => {
           setTasks([]);
           setSelectAll(false);
