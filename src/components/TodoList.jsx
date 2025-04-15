@@ -10,23 +10,31 @@ export default function TodoList({ darkMode, setDarkMode }) {
   const [filter, setFilter] = useState("all");
   const [selectAll, setSelectAll] = useState(false);
 
-  // Fetch tasks from the backend API
+  // Get token and set axios config
+  const token = localStorage.getItem("token");
+  const axiosConfig = {
+    headers: {
+      Authorization: `Token ${token}`,
+    },
+  };
+
+  // Fetch tasks
   useEffect(() => {
-    axios.get("https://backend-6un2.onrender.com/api/tasks/") // Replace with your backend URL
-      .then(response => {
-        setTasks(response.data);
-      })
-      .catch(error => console.error("There was an error fetching tasks:", error));
+    axios
+      .get("https://backend-6un2.onrender.com/api/tasks/", axiosConfig)
+      .then((response) => setTasks(response.data))
+      .catch((error) => console.error("There was an error fetching tasks:", error));
   }, []);
 
   const addTask = () => {
     if (task.trim() === "") return;
-    axios.post("https://backend-6un2.onrender.com/api/tasks/", { title: task, completed: false })
-      .then(response => {
+    axios
+      .post("https://backend-6un2.onrender.com/api/tasks/", { title: task, completed: false }, axiosConfig)
+      .then((response) => {
         setTasks([...tasks, response.data]);
         setTask("");
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Error adding task:", error);
         alert("Failed to add task. Please try again.");
       });
@@ -34,23 +42,26 @@ export default function TodoList({ darkMode, setDarkMode }) {
 
   const removeTask = (index) => {
     const taskToDelete = tasks[index];
-    axios.delete(`https://backend-6un2.onrender.com/api/tasks/${taskToDelete.id}/`)
+    axios
+      .delete(`https://backend-6un2.onrender.com/api/tasks/${taskToDelete.id}/`, axiosConfig)
       .then(() => {
         setTasks(tasks.filter((_, i) => i !== index));
       })
-      .catch(error => console.error("Error removing task:", error));
+      .catch((error) => console.error("Error removing task:", error));
   };
 
   const toggleComplete = (index) => {
     const taskToToggle = tasks[index];
-    axios.put(`https://backend-6un2.onrender.com/api/tasks/${taskToToggle.id}/`, {
-      ...taskToToggle,
-      completed: !taskToToggle.completed,
-    })
-      .then(response => {
+    axios
+      .put(
+        `https://backend-6un2.onrender.com/api/tasks/${taskToToggle.id}/`,
+        { ...taskToToggle, completed: !taskToToggle.completed },
+        axiosConfig
+      )
+      .then((response) => {
         setTasks(tasks.map((t, i) => (i === index ? response.data : t)));
       })
-      .catch(error => console.error("Error toggling task completion:", error));
+      .catch((error) => console.error("Error toggling task completion:", error));
   };
 
   const startEditing = (index, text) => {
@@ -61,31 +72,34 @@ export default function TodoList({ darkMode, setDarkMode }) {
   const saveEdit = (index) => {
     if (editedTask.trim() === "") return;
     const taskToEdit = tasks[index];
-    axios.put(`https://backend-6un2.onrender.com/api/tasks/${taskToEdit.id}/`, {
-      ...taskToEdit,
-      title: editedTask,
-    })
-      .then(response => {
+    axios
+      .put(
+        `https://backend-6un2.onrender.com/api/tasks/${taskToEdit.id}/`,
+        { ...taskToEdit, title: editedTask },
+        axiosConfig
+      )
+      .then((response) => {
         setTasks(tasks.map((t, i) => (i === index ? response.data : t)));
         setEditingIndex(null);
       })
-      .catch(error => console.error("Error saving task edit:", error));
+      .catch((error) => console.error("Error saving task edit:", error));
   };
 
   const handleDeleteAll = () => {
     if (selectAll) {
-      axios.delete("https://backend-6un2.onrender.com/api/tasks/")
+      axios
+        .delete("https://backend-6un2.onrender.com/api/tasks/", axiosConfig)
         .then(() => {
           setTasks([]);
           setSelectAll(false);
         })
-        .catch(error => console.error("Error deleting all tasks:", error));
+        .catch((error) => console.error("Error deleting all tasks:", error));
     }
   };
 
   const handleSelectAll = () => {
     setSelectAll(!selectAll);
-    tasks.forEach(task => toggleComplete(tasks.indexOf(task)));
+    tasks.forEach((task, index) => toggleComplete(index));
   };
 
   const filteredTasks = tasks.filter((t) => {
@@ -111,13 +125,15 @@ export default function TodoList({ darkMode, setDarkMode }) {
         <button onClick={() => setFilter("all")}>All</button>
         <button onClick={() => setFilter("completed")}>Completed</button>
         <button onClick={() => setFilter("pending")}>Pending</button>
-        <button className="delete-all-button" onClick={handleDeleteAll} disabled={!selectAll}>Delete All</button>
+        <button className="delete-all-button" onClick={handleDeleteAll} disabled={!selectAll}>
+          Delete All
+        </button>
       </div>
       <div className="select-all-container">
-        <input 
-          type="checkbox" 
-          checked={selectAll} 
-          onChange={handleSelectAll} 
+        <input
+          type="checkbox"
+          checked={selectAll}
+          onChange={handleSelectAll}
           id="select-all"
         />
         <label htmlFor="select-all">Select All</label>
